@@ -4,6 +4,10 @@
   "description": "Mock Firebase without a connection to a server",
   "main": "lib/index.js",
   "author": "Sebastian Garrido",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebasgarcep/firebase-admin-mock.git"
+  },
   "license": "MIT",
   "scripts": {
     "test": "jest"
