@@ -1,6 +1,6 @@
 'use strict';
 
-const Query = require('../lib/query');
+const Query = require('../../lib/query');
 
 describe('Query testing suite', () => {
   beforeEach(() => {

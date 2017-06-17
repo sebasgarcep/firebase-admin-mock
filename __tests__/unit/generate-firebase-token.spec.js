@@ -1,6 +1,6 @@
 'use strict';
 
-const generateFirebaseToken = require('../lib/generate-firebase-token');
+const generateFirebaseToken = require('../../lib/generate-firebase-token');
 
 describe('generateFirebaseToken testing suite', () => {
   it('should run without errors with no arguments', () => {

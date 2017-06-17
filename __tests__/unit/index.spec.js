@@ -1,6 +1,6 @@
 'use strict';
 
-const { AdminRoot } = require('../lib');
+const { AdminRoot } = require('../../lib');
 
 let admin;
 describe('Firebase admin root testing suite', () => {

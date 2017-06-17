@@ -3,7 +3,7 @@
 const Immutable = require('immutable');
 const immutableMatchers = require('jest-immutable-matchers');
 
-const getValue = require('../lib/get-value');
+const getValue = require('../../lib/get-value');
 
 const parseData = Immutable.fromJS;
 

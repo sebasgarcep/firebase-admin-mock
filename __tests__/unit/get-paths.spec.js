@@ -1,6 +1,6 @@
 'use strict';
 
-const getPaths = require('../lib/get-paths');
+const getPaths = require('../../lib/get-paths');
 
 describe('getPaths testing suite', () => {
   it('should run without errors when provided a valid key', () => {

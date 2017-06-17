@@ -1,7 +1,7 @@
 'use strict';
 
 const Immutable = require('immutable');
-const queryChildren = require('../lib/query-children');
+const queryChildren = require('../../lib/query-children');
 
 describe('queryChildren testing suite', () => {
   it('should throw when no query configuration is passed', () => {

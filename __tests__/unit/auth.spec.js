@@ -1,6 +1,6 @@
 'use strict';
 
-const Auth = require('../lib/auth');
+const Auth = require('../../lib/auth');
 
 let auth;
 describe('Auth testing suite', () => {

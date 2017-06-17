@@ -1,7 +1,7 @@
 'use strict';
 
 const Immutable = require('immutable');
-const reconciliation = require('../lib/reconciliation');
+const reconciliation = require('../../lib/reconciliation');
 
 const parseData = Immutable.fromJS;
 
@@ -32,52 +32,63 @@ describe('reconciliation testing suite', () => {
       {
         type: 'child_added',
         location: [],
+        path: '',
       },
       {
         type: 'child_added',
         location: ['value'],
+        path: 'value',
       },
     ]);
     expect(reconciliation(tree2, tree3)).toEqual([
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_added',
         location: ['foo'],
+        path: 'foo',
       },
     ]);
     expect(reconciliation(tree3, tree4)).toEqual([
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_added',
         location: ['nested'],
+        path: 'nested',
       },
       {
         type: 'child_added',
         location: ['nested', 'tree'],
+        path: 'nested/tree',
       },
       {
         type: 'child_added',
         location: ['nested', 'tree', 'graph'],
+        path: 'nested/tree/graph',
       },
     ]);
     expect(reconciliation(tree4, tree5)).toEqual([
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_changed',
         location: ['nested'],
+        path: 'nested',
       },
       {
         type: 'child_added',
         location: ['nested', 'node'],
+        path: 'nested/node',
       },
     ]);
   });
@@ -92,59 +103,64 @@ describe('reconciliation testing suite', () => {
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_changed',
         location: ['nested'],
+        path: 'nested',
       },
       {
         type: 'child_removed',
         location: ['nested', 'node'],
+        path: 'nested/node',
       },
     ]);
     expect(reconciliation(tree4, tree3)).toEqual([
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_removed',
         location: ['nested'],
+        path: 'nested',
       },
       {
         type: 'child_removed',
         location: ['nested', 'tree'],
+        path: 'nested/tree',
       },
       {
         type: 'child_removed',
         location: ['nested', 'tree', 'graph'],
+        path: 'nested/tree/graph',
       },
     ]);
     expect(reconciliation(tree3, tree2)).toEqual([
       {
         type: 'child_changed',
         location: [],
+        path: '',
       },
       {
         type: 'child_removed',
         location: ['foo'],
+        path: 'foo',
       },
     ]);
     expect(reconciliation(tree2, tree1)).toEqual([
       {
         type: 'child_removed',
         location: [],
+        path: '',
       },
       {
         type: 'child_removed',
         location: ['value'],
+        path: 'value',
       },
     ]);
-  });
-
-  it('should treat array as objects', () => {
-    const array = parseData([0, 1, 2]);
-    const obj = parseData({ 0: 0, 1: 1, 2: 2 });
-    expect(reconciliation(array, obj)).toEqual([]);
   });
 });

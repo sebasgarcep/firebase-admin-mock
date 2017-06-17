@@ -1,6 +1,6 @@
 'use strict';
 
-const Reference = require('../lib/reference');
+const Reference = require('../../lib/reference');
 
 let ref;
 describe('Reference testing suite', () => {

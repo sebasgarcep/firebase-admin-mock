@@ -3,7 +3,7 @@
 const Immutable = require('immutable');
 const immutableMatchers = require('jest-immutable-matchers');
 
-const Database = require('../lib/database');
+const Database = require('../../lib/database');
 
 let database;
 describe('Database testing suite', () => {
@@ -39,16 +39,12 @@ describe('Database testing suite', () => {
 
   it('should transform array into maps', () => {
     const value = database._makeImmutable([4, 5, 6]);
-    for (const key of value.keys()) { // eslint-disable-line no-restricted-syntax
-      expect(typeof key).toBe('string');
-    }
+    expect(value).toEqual({ 0: 4, 1: 5, 2: 6 });
   });
 
   it('should transform nested arrays into maps', () => {
     const value = database._makeImmutable({ val: [4, 5, 6] });
-    for (const key of value.get('val').keys()) { // eslint-disable-line no-restricted-syntax
-      expect(typeof key).toEqual('string');
-    }
+    expect(value).toEqual({ val: { 0: 4, 1: 5, 2: 6 } });
   });
 
   it('should return current data', () => {

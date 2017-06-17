@@ -1,6 +1,6 @@
 'use strict';
 
-const validateDataTree = require('../lib/validate-data-tree');
+const validateDataTree = require('../../lib/validate-data-tree');
 
 describe('validateDataTree testing suite', () => {
   it('should return non-object trees', () => {
@@ -26,5 +26,11 @@ describe('validateDataTree testing suite', () => {
     expect(validateDataTree({ value: null })).toEqual(null);
     expect(validateDataTree({ nested: { object: null } })).toEqual(null);
     expect(validateDataTree({ nested: { object: { value: null }, type: 'cat' } })).toEqual({ nested: { type: 'cat' } });
+  });
+
+  it('should separate slashed keys into single keys at different levels of the data tree', () => {
+    expect(validateDataTree({ 'foo/bar': true })).toEqual({ foo: { bar: true } });
+    expect(validateDataTree({ foo: { 'bar/baz': true } })).toEqual({ foo: { bar: { baz: true } } });
+    expect(validateDataTree({ 'foo/bar': { 'baz/max': true } })).toEqual({ foo: { bar: { baz: { max: true } } } });
   });
 });

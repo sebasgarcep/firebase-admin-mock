@@ -1,6 +1,6 @@
 'use strict';
 
-const concatenatePaths = require('../lib/concatenate-paths');
+const concatenatePaths = require('../../lib/concatenate-paths');
 
 describe('concatenatePaths testing suite', () => {
   it('should run without inputs', () => {
