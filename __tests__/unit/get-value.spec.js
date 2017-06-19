@@ -24,8 +24,10 @@ describe('getValue testing suite', () => {
   it('should return nested values if they exist', () => {
     const data = parseData({ fake: 'prop', nested: { values: { should: 'get' } } });
     expect(getValue(data, 'fake')).toEqualImmutable(data.get('fake'));
-    expect(getValue(data, 'nested', 'values')).toEqualImmutable(data.getIn('nested', 'values'));
-    expect(getValue(data, 'nested', 'values', 'should')).toEqualImmutable(data.getIn('nested', 'values', 'should'));
+    expect(getValue(data, 'nested', 'values'))
+      .toEqualImmutable(data.getIn(['nested', 'values']));
+    expect(getValue(data, 'nested', 'values', 'should'))
+      .toEqualImmutable(data.getIn(['nested', 'values', 'should']));
   });
 
   it('should return null for values that do not exist', () => {

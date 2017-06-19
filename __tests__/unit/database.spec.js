@@ -3,15 +3,20 @@
 const Immutable = require('immutable');
 const immutableMatchers = require('jest-immutable-matchers');
 
+const App = require('../../lib/app');
 const Database = require('../../lib/database');
+const Reference = require('../../lib/reference');
+const { defaultConfig, DEFAULT_APP_KEY } = require('../../lib/constants');
 
 let database;
+const app = new App(() => {}, defaultConfig, DEFAULT_APP_KEY);
 describe('Database testing suite', () => {
   beforeEach(() => {
     jest.addMatchers(immutableMatchers);
-    database = new Database();
+    database = new Database(app);
   });
 
+  // constructor
   it('should return a database object when calling the constructor', () => {
     expect(database).toEqual(expect.anything());
   });
@@ -20,12 +25,49 @@ describe('Database testing suite', () => {
     expect(database).not.toBe(new Database());
   });
 
+  // .app
+  it('should have an app', () => {
+    expect(database.app).toEqual(expect.anything());
+  });
+
+  it('should have its app be the same it was passed in the constructor', () => {
+    expect(database.app).toBe(app);
+  });
+
+  // .goOffline() -- missing implementation and tests
+  it('should run goOffline without errors', () => {
+    expect(() => database.goOffline()).not.toThrow();
+  });
+
+  // .goOnline() -- missing implementation and tests
+  it('should run goOnline without errors', () => {
+    expect(() => database.goOnline()).not.toThrow();
+  });
+
+  // .ref()
+  it('should run without errors when calling ref', () => {
+    expect(() => database.ref()).not.toThrow();
+  });
+
   it('should return a reference when calling ref', () => {
-    expect(database.ref()).toEqual(expect.anything());
+    expect(database.ref()).toBeInstanceOf(Reference);
   });
 
   it('should return a reference when calling ref with a path', () => {
-    expect(database.ref('child_name')).toEqual(expect.anything());
+    expect(database.ref('child_name')).toBeInstanceOf(Reference);
+  });
+
+  // .refFromURL()
+  it('should run without errors when calling refFromURL', () => {
+    expect(() => database.refFromURL(defaultConfig.databaseUrl)).not.toThrow();
+  });
+
+  it('should return a referencee when calling refFromURL', () => {
+    expect(database.refFromURL(defaultConfig.databaseUrl)).toBeInstanceOf(Reference);
+  });
+
+  it('should throw an error when calling refFromURL with a different base url than the database', () => {
+    expect(() => database.refFromURL('https://not-database-url.firebaseio.com')).toThrow();
   });
 
   // INTERNALS
@@ -39,12 +81,12 @@ describe('Database testing suite', () => {
 
   it('should transform array into maps', () => {
     const value = database._makeImmutable([4, 5, 6]);
-    expect(value).toEqual({ 0: 4, 1: 5, 2: 6 });
+    expect(value).toEqualImmutable(Immutable.fromJS({ 0: 4, 1: 5, 2: 6 }));
   });
 
   it('should transform nested arrays into maps', () => {
     const value = database._makeImmutable({ val: [4, 5, 6] });
-    expect(value).toEqual({ val: { 0: 4, 1: 5, 2: 6 } });
+    expect(value).toEqualImmutable(Immutable.fromJS({ val: { 0: 4, 1: 5, 2: 6 } }));
   });
 
   it('should return current data', () => {

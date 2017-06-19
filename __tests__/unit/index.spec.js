@@ -1,12 +1,13 @@
 'use strict';
 
 const { AdminRoot } = require('../../lib');
+const { defaultConfig } = require('../../lib/constants');
 
 let admin;
 describe('Firebase admin root testing suite', () => {
   beforeEach(() => {
     admin = new AdminRoot();
-    admin.initializeApp({});
+    admin.initializeApp(defaultConfig);
   });
 
   it('should return an admin object', () => {
@@ -38,18 +39,18 @@ describe('Firebase admin root testing suite', () => {
   });
 
   it('should return an initialized app on initialization', () => {
-    const app = admin.initializeApp({}, 'APP_NAME');
+    const app = admin.initializeApp(defaultConfig, 'APP_NAME');
     expect(app).toEqual(expect.anything());
   });
 
   it('should add app to app array', () => {
     expect(admin.apps).not.toEqual(expect.arrayContaining(['APP_NAME']));
-    admin.initializeApp({}, 'APP_NAME');
+    admin.initializeApp(defaultConfig, 'APP_NAME');
     expect(admin.apps).toEqual(expect.arrayContaining(['APP_NAME']));
   });
 
   it('should return the initialized app when requested by name', () => {
-    const app = admin.initializeApp({}, 'APP_NAME');
+    const app = admin.initializeApp(defaultConfig, 'APP_NAME');
     expect(admin.app('APP_NAME')).toBe(app);
   });
 
@@ -58,12 +59,12 @@ describe('Firebase admin root testing suite', () => {
   });
 
   it('should return an app\'s auth object', () => {
-    const app = admin.initializeApp({}, 'APP_NAME');
+    const app = admin.initializeApp(defaultConfig, 'APP_NAME');
     expect(admin.auth(app)).toBe(app.auth());
   });
 
   it('should return an app\'s database object', () => {
-    const app = admin.initializeApp({}, 'APP_NAME');
+    const app = admin.initializeApp(defaultConfig, 'APP_NAME');
     expect(admin.database(app)).toBe(app.database());
   });
 
@@ -79,7 +80,7 @@ describe('Firebase admin root testing suite', () => {
 
   // INTERNALS
   it('should delete an app when calling _deleteApp', () => {
-    admin.initializeApp({}, 'APP_NAME');
+    admin.initializeApp(defaultConfig, 'APP_NAME');
     admin._deleteApp('APP_NAME');
     expect(() => admin.app('APP_NAME')).toThrow();
   });

@@ -1,9 +1,10 @@
 'use strict';
 
 const App = require('../../lib/app');
+const { defaultConfig } = require('../../lib/constants');
 
 const APP_NAME = 'APP_NAME';
-const options = {};
+const options = defaultConfig;
 
 let app;
 let deleteApp;

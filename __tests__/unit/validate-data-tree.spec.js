@@ -3,6 +3,14 @@
 const validateDataTree = require('../../lib/validate-data-tree');
 
 describe('validateDataTree testing suite', () => {
+  it('should run without errors on valid data trees', () => {
+    expect(() => validateDataTree(null)).not.toThrow();
+    expect(() => validateDataTree(true)).not.toThrow();
+    expect(() => validateDataTree(100)).not.toThrow();
+    expect(() => validateDataTree('str')).not.toThrow();
+    expect(() => validateDataTree({ foo: 'bar' })).not.toThrow();
+  });
+
   it('should return non-object trees', () => {
     expect(validateDataTree(null)).toEqual(null);
     expect(validateDataTree(true)).toEqual(true);
@@ -17,8 +25,17 @@ describe('validateDataTree testing suite', () => {
   });
 
   it('should remove null values from the tree at any level', () => {
-    expect(validateDataTree({ type: 'cat', value: null })).toEqual({ type: 'cat' });
-    expect(validateDataTree({ nested: { object: { type: 'cat', value: null } } })).toEqual({ nested: { object: { type: 'cat' } } });
+    expect(validateDataTree({ type: 'cat', value: null }))
+      .toEqual({ type: 'cat' });
+    expect(validateDataTree({ nested: { object: { type: 'cat', value: null } } }))
+      .toEqual({ nested: { object: { type: 'cat' } } });
+  });
+
+  it('should not remove null values when passed doNotStripNull as an option', () => {
+    expect(validateDataTree({ type: 'cat', value: null }, { doNotStripNull: true }))
+      .toEqual({ type: 'cat', value: null });
+    expect(validateDataTree({ nested: { object: { type: 'cat', value: null } } }, { doNotStripNull: true }))
+      .toEqual({ nested: { object: { type: 'cat', value: null } } });
   });
 
   it('should null out empty objects at any level', () => {
