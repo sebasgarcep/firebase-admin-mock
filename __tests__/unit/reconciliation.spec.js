@@ -30,65 +30,87 @@ describe('reconciliation testing suite', () => {
     const tree5 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' }, node: 'bird' } });
     expect(reconciliation(tree1, tree2)).toEqual([
       {
-        type: 'child_added',
+        type: 'added',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['value'],
         path: 'value',
+        parentLocation: [],
+        parentPath: '',
       },
     ]);
     expect(reconciliation(tree2, tree3)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['foo'],
         path: 'foo',
+        parentLocation: [],
+        parentPath: '',
       },
     ]);
     expect(reconciliation(tree3, tree4)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['nested'],
         path: 'nested',
+        parentLocation: [],
+        parentPath: '',
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['nested', 'tree'],
         path: 'nested/tree',
+        parentLocation: ['nested'],
+        parentPath: 'nested',
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['nested', 'tree', 'graph'],
         path: 'nested/tree/graph',
+        parentLocation: ['nested', 'tree'],
+        parentPath: 'nested/tree',
       },
     ]);
     expect(reconciliation(tree4, tree5)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_changed',
+        type: 'changed',
         location: ['nested'],
         path: 'nested',
+        parentLocation: [],
+        parentPath: '',
       },
       {
-        type: 'child_added',
+        type: 'added',
         location: ['nested', 'node'],
         path: 'nested/node',
+        parentLocation: ['nested'],
+        parentPath: 'nested',
       },
     ]);
   });
@@ -101,65 +123,87 @@ describe('reconciliation testing suite', () => {
     const tree5 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' }, node: 'bird' } });
     expect(reconciliation(tree5, tree4)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_changed',
+        type: 'changed',
         location: ['nested'],
         path: 'nested',
+        parentLocation: [],
+        parentPath: '',
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['nested', 'node'],
         path: 'nested/node',
+        parentLocation: ['nested'],
+        parentPath: 'nested',
       },
     ]);
     expect(reconciliation(tree4, tree3)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['nested'],
         path: 'nested',
+        parentLocation: [],
+        parentPath: '',
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['nested', 'tree'],
         path: 'nested/tree',
+        parentLocation: ['nested'],
+        parentPath: 'nested',
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['nested', 'tree', 'graph'],
         path: 'nested/tree/graph',
+        parentLocation: ['nested', 'tree'],
+        parentPath: 'nested/tree',
       },
     ]);
     expect(reconciliation(tree3, tree2)).toEqual([
       {
-        type: 'child_changed',
+        type: 'changed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['foo'],
         path: 'foo',
+        parentLocation: [],
+        parentPath: '',
       },
     ]);
     expect(reconciliation(tree2, tree1)).toEqual([
       {
-        type: 'child_removed',
+        type: 'removed',
         location: [],
         path: '',
+        parentLocation: null,
+        parentPath: null,
       },
       {
-        type: 'child_removed',
+        type: 'removed',
         location: ['value'],
         path: 'value',
+        parentLocation: [],
+        parentPath: '',
       },
     ]);
   });
