@@ -2,3 +2,5 @@ __tests__
 .eslintrc
 *.lock
 examples
+*.log
+index.html
