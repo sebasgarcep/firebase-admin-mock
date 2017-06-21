@@ -2,6 +2,7 @@
 
 const Immutable = require('immutable');
 const reconciliation = require('../../lib/reconciliation');
+const { UPDATES } = require('../../lib/constants');
 
 const parseData = Immutable.fromJS;
 
@@ -17,9 +18,9 @@ describe('reconciliation testing suite', () => {
     const treeDepth1 = { value: 'fake' };
     const treeDepth2 = { value: 'fake', nested: { graph: 'node' } };
     const treeDepth3 = { value: 'fake', nested: { foo: { bar: 'node' } } };
-    expect(reconciliation(parseData(treeDepth1), parseData(treeDepth1))).toEqual([]);
-    expect(reconciliation(parseData(treeDepth2), parseData(treeDepth2))).toEqual([]);
-    expect(reconciliation(parseData(treeDepth3), parseData(treeDepth3))).toEqual([]);
+    expect(reconciliation(parseData(treeDepth1), parseData(treeDepth1))).toEqual(null);
+    expect(reconciliation(parseData(treeDepth2), parseData(treeDepth2))).toEqual(null);
+    expect(reconciliation(parseData(treeDepth3), parseData(treeDepth3))).toEqual(null);
   });
 
   it('should return the correct list of events when adding arbitrary nodes arbitrarily deep', () => {
@@ -28,91 +29,105 @@ describe('reconciliation testing suite', () => {
     const tree3 = parseData({ value: 'fake', foo: 'bar' });
     const tree4 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' } } });
     const tree5 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' }, node: 'bird' } });
-    expect(reconciliation(tree1, tree2)).toEqual([
-      {
+    expect(reconciliation(tree1, tree2)).toEqual({
+      [UPDATES]: {
         type: 'added',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'added',
-        location: ['value'],
-        path: 'value',
-        parentLocation: [],
-        parentPath: '',
+      value: {
+        [UPDATES]: {
+          type: 'added',
+          location: ['value'],
+          path: 'value',
+          parentLocation: [],
+          parentPath: '',
+        },
       },
-    ]);
-    expect(reconciliation(tree2, tree3)).toEqual([
-      {
+    });
+    expect(reconciliation(tree2, tree3)).toEqual({
+      [UPDATES]: {
         type: 'changed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'added',
-        location: ['foo'],
-        path: 'foo',
-        parentLocation: [],
-        parentPath: '',
+      foo: {
+        [UPDATES]: {
+          type: 'added',
+          location: ['foo'],
+          path: 'foo',
+          parentLocation: [],
+          parentPath: '',
+        },
       },
-    ]);
-    expect(reconciliation(tree3, tree4)).toEqual([
-      {
+    });
+    expect(reconciliation(tree3, tree4)).toEqual({
+      [UPDATES]: {
         type: 'changed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'added',
-        location: ['nested'],
-        path: 'nested',
-        parentLocation: [],
-        parentPath: '',
+      nested: {
+        [UPDATES]: {
+          type: 'added',
+          location: ['nested'],
+          path: 'nested',
+          parentLocation: [],
+          parentPath: '',
+        },
+        tree: {
+          [UPDATES]: {
+            type: 'added',
+            location: ['nested', 'tree'],
+            path: 'nested/tree',
+            parentLocation: ['nested'],
+            parentPath: 'nested',
+          },
+          graph: {
+            [UPDATES]: {
+              type: 'added',
+              location: ['nested', 'tree', 'graph'],
+              path: 'nested/tree/graph',
+              parentLocation: ['nested', 'tree'],
+              parentPath: 'nested/tree',
+            },
+          },
+        },
       },
-      {
-        type: 'added',
-        location: ['nested', 'tree'],
-        path: 'nested/tree',
-        parentLocation: ['nested'],
-        parentPath: 'nested',
-      },
-      {
-        type: 'added',
-        location: ['nested', 'tree', 'graph'],
-        path: 'nested/tree/graph',
-        parentLocation: ['nested', 'tree'],
-        parentPath: 'nested/tree',
-      },
-    ]);
-    expect(reconciliation(tree4, tree5)).toEqual([
-      {
+    });
+    expect(reconciliation(tree4, tree5)).toEqual({
+      [UPDATES]: {
         type: 'changed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'changed',
-        location: ['nested'],
-        path: 'nested',
-        parentLocation: [],
-        parentPath: '',
+      nested: {
+        [UPDATES]: {
+          type: 'changed',
+          location: ['nested'],
+          path: 'nested',
+          parentLocation: [],
+          parentPath: '',
+        },
+        node: {
+          [UPDATES]: {
+            type: 'added',
+            location: ['nested', 'node'],
+            path: 'nested/node',
+            parentLocation: ['nested'],
+            parentPath: 'nested',
+          },
+        },
       },
-      {
-        type: 'added',
-        location: ['nested', 'node'],
-        path: 'nested/node',
-        parentLocation: ['nested'],
-        parentPath: 'nested',
-      },
-    ]);
+    });
   });
 
   it('should return the correct list of events when removing arbitrary nodes arbitrarily deep', () => {
@@ -121,90 +136,104 @@ describe('reconciliation testing suite', () => {
     const tree3 = parseData({ value: 'fake', foo: 'bar' });
     const tree4 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' } } });
     const tree5 = parseData({ value: 'fake', foo: 'bar', nested: { tree: { graph: 'value' }, node: 'bird' } });
-    expect(reconciliation(tree5, tree4)).toEqual([
-      {
+    expect(reconciliation(tree5, tree4)).toEqual({
+      [UPDATES]: {
         type: 'changed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'changed',
-        location: ['nested'],
-        path: 'nested',
-        parentLocation: [],
-        parentPath: '',
+      nested: {
+        [UPDATES]: {
+          type: 'changed',
+          location: ['nested'],
+          path: 'nested',
+          parentLocation: [],
+          parentPath: '',
+        },
+        node: {
+          [UPDATES]: {
+            type: 'removed',
+            location: ['nested', 'node'],
+            path: 'nested/node',
+            parentLocation: ['nested'],
+            parentPath: 'nested',
+          },
+        },
       },
-      {
-        type: 'removed',
-        location: ['nested', 'node'],
-        path: 'nested/node',
-        parentLocation: ['nested'],
-        parentPath: 'nested',
-      },
-    ]);
-    expect(reconciliation(tree4, tree3)).toEqual([
-      {
-        type: 'changed',
-        location: [],
-        path: '',
-        parentLocation: null,
-        parentPath: null,
-      },
-      {
-        type: 'removed',
-        location: ['nested'],
-        path: 'nested',
-        parentLocation: [],
-        parentPath: '',
-      },
-      {
-        type: 'removed',
-        location: ['nested', 'tree'],
-        path: 'nested/tree',
-        parentLocation: ['nested'],
-        parentPath: 'nested',
-      },
-      {
-        type: 'removed',
-        location: ['nested', 'tree', 'graph'],
-        path: 'nested/tree/graph',
-        parentLocation: ['nested', 'tree'],
-        parentPath: 'nested/tree',
-      },
-    ]);
-    expect(reconciliation(tree3, tree2)).toEqual([
-      {
+    });
+    expect(reconciliation(tree4, tree3)).toEqual({
+      [UPDATES]: {
         type: 'changed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'removed',
-        location: ['foo'],
-        path: 'foo',
-        parentLocation: [],
-        parentPath: '',
+      nested: {
+        [UPDATES]: {
+          type: 'removed',
+          location: ['nested'],
+          path: 'nested',
+          parentLocation: [],
+          parentPath: '',
+        },
+        tree: {
+          [UPDATES]: {
+            type: 'removed',
+            location: ['nested', 'tree'],
+            path: 'nested/tree',
+            parentLocation: ['nested'],
+            parentPath: 'nested',
+          },
+          graph: {
+            [UPDATES]: {
+              type: 'removed',
+              location: ['nested', 'tree', 'graph'],
+              path: 'nested/tree/graph',
+              parentLocation: ['nested', 'tree'],
+              parentPath: 'nested/tree',
+            },
+          },
+        },
       },
-    ]);
-    expect(reconciliation(tree2, tree1)).toEqual([
-      {
+    });
+    expect(reconciliation(tree3, tree2)).toEqual({
+      [UPDATES]: {
+        type: 'changed',
+        location: [],
+        path: '',
+        parentLocation: null,
+        parentPath: null,
+      },
+      foo: {
+        [UPDATES]: {
+          type: 'removed',
+          location: ['foo'],
+          path: 'foo',
+          parentLocation: [],
+          parentPath: '',
+        },
+      },
+    });
+    expect(reconciliation(tree2, tree1)).toEqual({
+      [UPDATES]: {
         type: 'removed',
         location: [],
         path: '',
         parentLocation: null,
         parentPath: null,
       },
-      {
-        type: 'removed',
-        location: ['value'],
-        path: 'value',
-        parentLocation: [],
-        parentPath: '',
+      value: {
+        [UPDATES]: {
+          type: 'removed',
+          location: ['value'],
+          path: 'value',
+          parentLocation: [],
+          parentPath: '',
+        },
       },
-    ]);
+    });
   });
 });

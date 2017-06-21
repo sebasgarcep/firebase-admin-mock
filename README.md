@@ -1,5 +1,7 @@
 # Firebase Admin Mock
 
+LimitedFilter.js:132 Uncaught Error: Firebase.set failed: First argument  contains an invalid key (red/color) .  Keys must be non-empty strings and can't contain ".", "#", "$", "/", "[", or "]"
+
 ### Notice
 
 ALPHA SOFTWARE. USE AT YOUR OWN RISK.

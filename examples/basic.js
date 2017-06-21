@@ -14,12 +14,7 @@ database.setMockData({ foo: 'bar' });
 
 admin.database()
   .ref()
-  .on('child_changed', (dataSnapshot) => {
+  .on('child_added', (dataSnapshot) => {
+    console.log(dataSnapshot.key);
     console.log(dataSnapshot.val());
   });
-
-admin.database()
-  .ref('key1')
-  .push({ foo: 'bar' });
-
-// console.log(admin.database().getMockData());
