@@ -1,6 +1,6 @@
 {
   "name": "firebase-admin-mock",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Mock Firebase without a connection to a server",
   "main": "lib/index.js",
   "author": "Sebastian Garrido",
