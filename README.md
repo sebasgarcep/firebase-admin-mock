@@ -1,7 +1,5 @@
 # Firebase Admin Mock
 
-LimitedFilter.js:132 Uncaught Error: Firebase.set failed: First argument  contains an invalid key (red/color) .  Keys must be non-empty strings and can't contain ".", "#", "$", "/", "[", or "]"
-
 ### Notice
 
 ALPHA SOFTWARE. USE AT YOUR OWN RISK.
@@ -38,23 +36,43 @@ let admin;
 describe('testing suite', () => {
   beforeEach(() => {
     admin = new AdminRoot();
+    admin.initializeApp({ ... });
   });
 });
 ```
 
 ### API
 
-We implement the same API as `firebase-admin` but we've added some useful testing methods.
+We implement the same API as `firebase-admin` but we've added some useful testing methods and variables.
+
+### exports
+
+##### AdminRoot
+
+Constructor for an `admin` instance.
+
+##### defaultConfig
+
+Placeholder configuration for `admin.initializeApp()`. Example:
+
+```javascript
+const { AdminRoot, defaultConfig } = require('firebase-admin-mock');
+
+const admin = new AdminRoot();
+admin.initializeApp(defaultConfig);
+
+// ... rest of your code
+```
 
 ### admin.database()
 
 ##### setMockData(data: null | string | number | boolean | object): void
 Validates that `data` is a valid Firebase data tree i.e. it has no `undefined` properties, and transforms the data tree when necessary, e.g by stripping away `null` properties and transforming nested keys like `foo/bar` into `foo: { bar: ... }`. This method runs without firing event handlers so it is useful for setting the initial state of the database one might expect.
 
-### getMockData(): null | string | number | boolean | object
+##### getMockData(): null | string | number | boolean | object
 Returns the validated and parsed data tree.
 
-### purgeMockData(): void
+##### purgeMockData(): void
 Deletes the data tree without firing event handlers.
 
 ### Checklist
