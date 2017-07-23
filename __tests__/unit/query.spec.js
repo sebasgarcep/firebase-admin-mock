@@ -307,7 +307,50 @@ describe('Query testing suite', () => {
 
   // .on() -- missing tests
 
-  // .once() -- missing tests
+  // .once()
+  it('should run once without failing', () => {
+    expect(() => (new Query(app)).once('value')).not.toThrow();
+  });
+
+  it('should run once with callback', () => {
+    const cb = jest.fn();
+    query.once('value', cb);
+    expect(cb).toHaveBeenCalled();
+  });
+
+  it('should run once with callback and DataSnapshot argument', () => {
+    const cb = jest.fn((dataSnapshot) => {
+      expect(dataSnapshot).toBeInstanceOf(DataSnapshot);
+    });
+    query.once('value', cb);
+    expect(cb).toHaveBeenCalled();
+  });
+
+  it('should run once with callback and DataSnapshot argument pointing to Query\'s path', () => {
+    const cb = jest.fn((dataSnapshot) => {
+      expect(dataSnapshot.key).toBe(query.ref.key);
+    });
+    query.once('value', cb);
+    expect(cb).toHaveBeenCalled();
+  });
+
+  it('should resolve once', () => {
+    query = new Query(app);
+    expect(query.once('value')).resolves.toEqual(expect.anything());
+  });
+
+  it('should resolve once with a DataSnapshot', () => {
+    query = new Query(app);
+    expect(query.once('value')).resolves.toBeInstanceOf(DataSnapshot);
+  });
+
+  it('should resolve once with a DataSnapshot pointing to the Query\'s path', () => {
+    query = new Query(app);
+    query.once('value')
+      .then((dataSnapshot) => {
+        expect(dataSnapshot.key).toBe(query.ref.key);
+      });
+  });
 
   // .orderByChild()
   it('should not throw when calling orderByChild', () => {
