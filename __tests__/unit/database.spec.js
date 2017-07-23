@@ -9,7 +9,7 @@ const Reference = require('../../lib/reference');
 const { defaultConfig, DEFAULT_APP_KEY } = require('../../lib/constants');
 
 let database;
-const app = new App(() => {}, defaultConfig, DEFAULT_APP_KEY);
+const app = new App(() => { }, defaultConfig, DEFAULT_APP_KEY);
 describe('Database testing suite', () => {
   beforeEach(() => {
     jest.addMatchers(immutableMatchers);
@@ -76,7 +76,7 @@ describe('Database testing suite', () => {
   });
 
   it('should initialize an empty database', () => {
-    expect(database._data).toBe(null);
+    expect(database._data).toEqualImmutable(Immutable.fromJS({}));
   });
 
   it('should transform array into maps', () => {
@@ -90,7 +90,7 @@ describe('Database testing suite', () => {
   });
 
   it('should return current data', () => {
-    expect(database._getData()).toEqual(null);
+    expect(database._getData()).toEqualImmutable(Immutable.fromJS({}));
   });
 
   // TESTING UTILITIES
