@@ -12,6 +12,8 @@ let ref;
 describe('Reference testing suite', () => {
   beforeEach(() => {
     app = new App(noop, defaultConfig, DEFAULT_APP_KEY);
+    // TODO: Update databse so that this does not cause errors.
+    app.database().setMockData({ foo: 'bar' });
   });
 
   // constructor
@@ -120,9 +122,105 @@ describe('Reference testing suite', () => {
 
   // .push()
 
-  // .remove()
 
-  // .set()
+  // .remove()
+  it('should run without errors when calling remove without a callback', () => {
+    ref = new Reference(app);
+
+    return expect(ref.remove()).resolves.toBe(undefined);
+  });
+
+  it('should run without errors when calling remove with key that does not exist', (done) => {
+    ref = new Reference(app);
+
+    ref.child('undefined_key').remove((res) => {
+      expect(res).toBe(undefined);
+      done();
+    });
+  });
+
+  it('should run without errors when calling remove on a child that does not exist', () => {
+    ref = new Reference(app);
+
+    return expect(ref.child('undefined_key').remove()).resolves.toBe(undefined);
+  });
+
+  // .set();
+  it('should throw an erorr when set is called without any arguments', (done) => {
+    ref = new Reference(app);
+
+    try {
+      ref.set();
+    } catch (error) {
+      expect(error.message).toBe('Undefined is not allowed in the data tree.');
+      done();
+    }
+  });
+
+  it('should delete value when set is called with null', (done) => {
+    ref = new Reference(app);
+
+    ref.set(null)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe(null);
+        done();
+      });
+  });
+
+  it('should run without errors when calling set with a callback', (done) => {
+    ref = new Reference(app);
+
+    ref.set('foo_bar', (res) => {
+      expect(res).toBe(undefined);
+
+      ref.once('value').then((snapshot) => {
+        expect(snapshot.val()).toBe('foo_bar');
+
+        done();
+      });
+    });
+  });
+
+  it('should run without errors when calling set without a callback', (done) => {
+    ref = new Reference(app);
+
+    ref.set('foo_bar')
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe('foo_bar');
+        done();
+      });
+  });
+
+  it('should run without errors when calling set on a child key that does not exist', (done) => {
+    ref = new Reference(app);
+
+    ref.child('path/to/foo').set('bar')
+      .then(() => ref.child('path/to/foo').once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe('bar');
+        done();
+      });
+  });
+
+  it('should run without errors when calling set with complex data', (done) => {
+    ref = new Reference(app);
+
+    const data = {
+      foo_bar: 'foo_foo_bar_bar',
+      bar: {
+        bar_foo: 'bar_bar_bar',
+      },
+    };
+
+    ref.set(data)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(data);
+        done();
+      });
+  });
 
   // .setPriority()
 
@@ -131,4 +229,77 @@ describe('Reference testing suite', () => {
   // .transaction()
 
   // .update()
+  it('should throw an error when update is called with no arguments', (done) => {
+    ref = new Reference(app);
+
+    try {
+      ref.update();
+    } catch (error) {
+      expect(error.message).toBe('Undefined is not allowed in the data tree.');
+      done();
+    }
+  });
+
+  it('should delete value when update is called with null', (done) => {
+    ref = new Reference(app);
+
+    ref.update(null)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe(null);
+        done();
+      });
+  });
+
+  it('should update the value of the ref when update is called with a new non-object value', (done) => {
+    ref = new Reference(app);
+
+    const dataSet = {
+      foo: 'bar',
+      bar: 'foo',
+    };
+
+    ref.set(dataSet)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(dataSet);
+      })
+      .then(() => {
+        const onComplete = () => {
+          ref.child('foo').once('value')
+            .then((fooSnapshot) => {
+              expect(fooSnapshot.val()).toBe('foo');
+              done();
+            });
+        };
+
+        ref.child('foo').update('foo', onComplete);
+      });
+  });
+
+  it('should update the value of the ref when update is called with an object value', (done) => {
+    ref = new Reference(app);
+
+    const dataSet = {
+      foo: 'bar',
+      bar: 'foo',
+    };
+
+    ref.set(dataSet)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(dataSet);
+      })
+      .then(() => {
+        const onComplete = () => {
+          ref.child('foo').once('value')
+            .then((fooSnapshot) => {
+              expect(fooSnapshot.val()).toBe('foo');
+              done();
+            });
+        };
+
+        ref.update({ foo: 'foo' }, onComplete);
+      });
+  });
 });
