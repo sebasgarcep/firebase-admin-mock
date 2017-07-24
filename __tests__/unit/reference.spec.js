@@ -5,13 +5,16 @@ const Reference = require('../../lib/reference');
 const Query = require('../../lib/query');
 const { DEFAULT_APP_KEY, defaultConfig } = require('../../lib/constants');
 
-const noop = () => {};
+const noop = () => { };
 
 let app;
 let ref;
 describe('Reference testing suite', () => {
+
   beforeEach(() => {
     app = new App(noop, defaultConfig, DEFAULT_APP_KEY);
+    // TODO: Update databse so that this does not cause errors.
+    app.database().setMockData({ 'foo': 'bar' })
   });
 
   // constructor
@@ -120,9 +123,97 @@ describe('Reference testing suite', () => {
 
   // .push()
 
-  // .remove()
 
-  // .set()
+  // .remove()
+  it('should run without errors when calling remove without a callbacks', () => {
+    ref = new Reference(app);
+
+    return expect(ref.remove()).resolves.toBe(undefined);
+  });
+
+  it('should run without errors when calling remove with key that does not exist', done => {
+    ref = new Reference(app);
+
+    ref.child('undefined_key').remove((res) => {
+      expect(res).toBe(undefined);
+      done();
+    });
+  });
+
+  it('should run without errors when calling remove on a child that does not exist', () => {
+    ref = new Reference(app);
+
+    return expect(ref.child('undefined_key').remove()).resolves.toBe(undefined);
+  });
+
+  // .set();
+  it('should throw an erorr when set is called without any arguments', done => {
+    ref = new Reference(app);
+
+    try {
+      ref.set();
+    } catch (error) {
+      expect(error.message).toBe('Undefined is not allowed in the data tree.');
+      done();
+    }
+  });
+
+  it('should delete value when set is called with null', async () => {
+    ref = new Reference(app);
+
+    await ref.set(null);
+    let snapshot = await ref.once('value');
+
+    expect(snapshot.val()).toBe(null);
+  });
+
+  it('should run without errors when calling set with a callback', done => {
+    ref = new Reference(app);
+
+    ref.set('foo_bar', (res) => {
+      expect(res).toBe(undefined);
+
+      ref.once('value').then((snapshot) => {
+        expect(snapshot.val()).toBe('foo_bar');
+
+        done();
+      });
+    });
+  });
+
+  it('should run without errors when calling set without a callback', async () => {
+    ref = new Reference(app);
+
+    await ref.set('foo_bar');
+    let snapshot = await ref.once('value');
+
+    expect(snapshot.val()).toBe('foo_bar');
+  })
+
+  it('should run without errors when calling set on a child key that does not exist', async () => {
+    ref = new Reference(app);
+
+    await ref.child('path/to/foo').set('bar');
+    let snapshot = await ref.child('path/to/foo').once('value');
+
+    expect(snapshot.val()).toBe('bar');
+  });
+
+  it('should run without errors when calling set with complex data', async () => {
+    ref = new Reference(app);
+
+    const data = {
+      'foo_bar': 'foo_foo_bar_bar',
+      'bar': {
+        'bar_foo': 'bar_bar_bar'
+      }
+    }
+
+    await ref.set(data);
+    let snapshot = await ref.once('value');
+
+    expect(snapshot.val()).toEqual(data);
+  })
 
   // .setPriority()
 
@@ -131,4 +222,67 @@ describe('Reference testing suite', () => {
   // .transaction()
 
   // .update()
+  it('should throw an error when update is called with no arguments', done => {
+    ref = new Reference(app);
+
+    try {
+      ref.update();
+    } catch (error) {
+      expect(error.message).toBe('Undefined is not allowed in the data tree.');
+      done();
+    }
+  });
+
+  it('should delete value when update is called with null', async () => {
+    ref = new Reference(app);
+
+    await ref.update(null);
+    let snapshot = await ref.once('value');
+
+    expect(snapshot.val()).toBe(null);
+  });
+
+  it('should update the value of the ref when update is called with a new non-object value', async done => {
+    ref = new Reference(app)
+
+    let dataSet = {
+      'foo': 'bar',
+      'bar': 'foo'
+    }
+
+    await ref.set(dataSet);
+    let snapshot = await ref.once('value');
+    expect(snapshot.val()).toEqual(dataSet);
+
+    ref.child('foo').update('foo', async () => {
+
+      let fooSnapshot = await ref.child('foo').once('value');
+
+      expect(fooSnapshot.val()).toBe('foo');
+      done();
+    });
+  });
+
+  it('should update the value of the ref when update is alled with an object value', async done => {
+    ref = new Reference(app)
+
+    let dataSet = {
+      'foo': 'bar',
+      'bar': 'foo'
+    }
+
+    await ref.set(dataSet);
+    let snapshot = await ref.once('value');
+    expect(snapshot.val()).toEqual(dataSet);
+
+    ref.update({
+      'foo': 'foo'
+    }, async () => {
+
+      let fooSnapshot = await ref.child('foo').once('value')
+
+      expect(fooSnapshot.val()).toBe('foo')
+      done()
+    });
+  })
 });

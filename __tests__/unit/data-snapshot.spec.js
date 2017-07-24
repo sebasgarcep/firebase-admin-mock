@@ -8,7 +8,5 @@ describe('DataSnapshot testing suite', () => {
     dataSnapshot = new DataSnapshot(data);
   });
 
-  it('should', () => {
-
-  });
+  it('placeholder')
 });
