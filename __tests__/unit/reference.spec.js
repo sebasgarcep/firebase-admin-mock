@@ -124,7 +124,7 @@ describe('Reference testing suite', () => {
 
 
   // .remove()
-  it('should run without errors when calling remove without a callbacks', () => {
+  it('should run without errors when calling remove without a callback', () => {
     ref = new Reference(app);
 
     return expect(ref.remove()).resolves.toBe(undefined);
@@ -157,13 +157,15 @@ describe('Reference testing suite', () => {
     }
   });
 
-  it('should delete value when set is called with null', async () => {
+  it('should delete value when set is called with null', (done) => {
     ref = new Reference(app);
 
-    await ref.set(null);
-    const snapshot = await ref.once('value');
-
-    expect(snapshot.val()).toBe(null);
+    ref.set(null)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe(null);
+        done();
+      });
   });
 
   it('should run without errors when calling set with a callback', (done) => {
@@ -180,25 +182,29 @@ describe('Reference testing suite', () => {
     });
   });
 
-  it('should run without errors when calling set without a callback', async () => {
+  it('should run without errors when calling set without a callback', (done) => {
     ref = new Reference(app);
 
-    await ref.set('foo_bar');
-    const snapshot = await ref.once('value');
-
-    expect(snapshot.val()).toBe('foo_bar');
+    ref.set('foo_bar')
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe('foo_bar');
+        done();
+      });
   });
 
-  it('should run without errors when calling set on a child key that does not exist', async () => {
+  it('should run without errors when calling set on a child key that does not exist', (done) => {
     ref = new Reference(app);
 
-    await ref.child('path/to/foo').set('bar');
-    const snapshot = await ref.child('path/to/foo').once('value');
-
-    expect(snapshot.val()).toBe('bar');
+    ref.child('path/to/foo').set('bar')
+      .then(() => ref.child('path/to/foo').once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe('bar');
+        done();
+      });
   });
 
-  it('should run without errors when calling set with complex data', async () => {
+  it('should run without errors when calling set with complex data', (done) => {
     ref = new Reference(app);
 
     const data = {
@@ -208,10 +214,12 @@ describe('Reference testing suite', () => {
       },
     };
 
-    await ref.set(data);
-    const snapshot = await ref.once('value');
-
-    expect(snapshot.val()).toEqual(data);
+    ref.set(data)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(data);
+        done();
+      });
   });
 
   // .setPriority()
@@ -232,16 +240,18 @@ describe('Reference testing suite', () => {
     }
   });
 
-  it('should delete value when update is called with null', async () => {
+  it('should delete value when update is called with null', (done) => {
     ref = new Reference(app);
 
-    await ref.update(null);
-    const snapshot = await ref.once('value');
-
-    expect(snapshot.val()).toBe(null);
+    ref.update(null)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toBe(null);
+        done();
+      });
   });
 
-  it('should update the value of the ref when update is called with a new non-object value', async (done) => {
+  it('should update the value of the ref when update is called with a new non-object value', (done) => {
     ref = new Reference(app);
 
     const dataSet = {
@@ -249,19 +259,25 @@ describe('Reference testing suite', () => {
       bar: 'foo',
     };
 
-    await ref.set(dataSet);
-    const snapshot = await ref.once('value');
-    expect(snapshot.val()).toEqual(dataSet);
+    ref.set(dataSet)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(dataSet);
+      })
+      .then(() => {
+        const onComplete = () => {
+          ref.child('foo').once('value')
+            .then((fooSnapshot) => {
+              expect(fooSnapshot.val()).toBe('foo');
+              done();
+            });
+        };
 
-    ref.child('foo').update('foo', async () => {
-      const fooSnapshot = await ref.child('foo').once('value');
-
-      expect(fooSnapshot.val()).toBe('foo');
-      done();
-    });
+        ref.child('foo').update('foo', onComplete);
+      });
   });
 
-  it('should update the value of the ref when update is alled with an object value', async (done) => {
+  it('should update the value of the ref when update is called with an object value', (done) => {
     ref = new Reference(app);
 
     const dataSet = {
@@ -269,17 +285,21 @@ describe('Reference testing suite', () => {
       bar: 'foo',
     };
 
-    await ref.set(dataSet);
-    const snapshot = await ref.once('value');
-    expect(snapshot.val()).toEqual(dataSet);
+    ref.set(dataSet)
+      .then(() => ref.once('value'))
+      .then((snapshot) => {
+        expect(snapshot.val()).toEqual(dataSet);
+      })
+      .then(() => {
+        const onComplete = () => {
+          ref.child('foo').once('value')
+            .then((fooSnapshot) => {
+              expect(fooSnapshot.val()).toBe('foo');
+              done();
+            });
+        };
 
-    ref.update({
-      foo: 'foo',
-    }, async () => {
-      const fooSnapshot = await ref.child('foo').once('value');
-
-      expect(fooSnapshot.val()).toBe('foo');
-      done();
-    });
+        ref.update({ foo: 'foo' }, onComplete);
+      });
   });
 });
