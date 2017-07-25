@@ -43,6 +43,12 @@ describe('Reference testing suite', () => {
     expect(ref.key).toBe(null);
   });
 
+  // .ref
+  it('should have a ref propery that is an instance of Reference', () => {
+    ref = new Reference(app);
+    expect(ref.ref).toBeInstanceOf(Reference);
+  });
+
   it('should have key equal the last part of the location in the data tree', () => {
     ref = new Reference(app, 'foo');
     expect(ref.key).toBe('foo');
