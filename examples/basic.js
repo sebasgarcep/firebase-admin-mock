@@ -12,6 +12,11 @@ const database = admin.database();
 
 database.setMockData({ foo: 'bar' });
 
+console.log(admin.database()
+  .ref()
+  .push()
+  .key);
+
 admin.database()
   .ref()
   .limitToLast(2)
@@ -31,3 +36,5 @@ admin.database()
 admin.database()
   .ref()
   .push({ foo: 3 });
+
+console.log(admin.database().getPushKeys());
