@@ -75,6 +75,9 @@ Returns the validated and parsed data tree.
 ##### purgeMockData(): void
 Deletes the data tree without firing event handlers.
 
+##### getPushKeys(): Array<string>
+Returns all the `.push()` keys that have been created. Useful for testing against the result `.getMockData()`.
+
 ### Checklist
 - [ ] Auth
 - [x] Realtime Database

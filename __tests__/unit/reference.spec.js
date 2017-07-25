@@ -121,6 +121,10 @@ describe('Reference testing suite', () => {
   });
 
   // .push()
+  it('should run without errors when calling push without a callback', () => {
+    ref = new Reference(app);
+    expect(() => ref.push('foo'));
+  });
 
 
   // .remove()

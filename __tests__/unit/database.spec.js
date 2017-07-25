@@ -8,12 +8,13 @@ const Database = require('../../lib/database');
 const Reference = require('../../lib/reference');
 const { defaultConfig, DEFAULT_APP_KEY } = require('../../lib/constants');
 
+let app;
 let database;
-const app = new App(() => {}, defaultConfig, DEFAULT_APP_KEY);
 describe('Database testing suite', () => {
   beforeEach(() => {
     jest.addMatchers(immutableMatchers);
-    database = new Database(app);
+    app = new App(() => {}, defaultConfig, DEFAULT_APP_KEY);
+    database = app.database();
   });
 
   // constructor
@@ -111,5 +112,11 @@ describe('Database testing suite', () => {
     const data = { data: 'DATA' };
     database.setMockData(data);
     expect(database.getMockData()).toEqual(data);
+  });
+
+  it('should return all push keys that have been created until this moment', () => {
+    expect(database.getPushKeys()).toHaveLength(0);
+    database.ref().push('foo');
+    expect(database.getPushKeys()).toHaveLength(1);
   });
 });
