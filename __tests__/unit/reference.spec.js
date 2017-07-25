@@ -1,6 +1,7 @@
 'use strict';
 
 const App = require('../../lib/app');
+const ThenableReference = require('../../lib/thenable-reference');
 const Reference = require('../../lib/reference');
 const Query = require('../../lib/query');
 const { DEFAULT_APP_KEY, defaultConfig } = require('../../lib/constants');
@@ -129,9 +130,44 @@ describe('Reference testing suite', () => {
   // .push()
   it('should run without errors when calling push without a callback', () => {
     ref = new Reference(app);
-    expect(() => ref.push('foo'));
+    expect(() => ref.push('foo')).not.toThrow();
   });
 
+  it('should run without errors when calling push with a callback', () => {
+    ref = new Reference(app);
+    expect(() => ref.push('foo', () => {})).not.toThrow();
+  });
+
+  it('should return a ThenableReference when no value is passed to push', () => {
+    ref = new Reference(app);
+    expect(ref.push()).toBeInstanceOf(ThenableReference);
+  });
+
+  it('should return a ThenableReference when a null value is passed to push', () => {
+    ref = new Reference(app);
+    expect(ref.push(null)).toBeInstanceOf(ThenableReference);
+  });
+
+  it('should return a ThenableReference when a value is passed to push', () => {
+    ref = new Reference(app);
+    expect(ref.push('foo')).toBeInstanceOf(ThenableReference);
+  });
+
+  it('should add a new key to the current reference when pushing a value', (done) => {
+    ref = new Reference(app);
+
+    app.database().setMockData(null);
+
+    ref.push('foo')
+      .then(() => ref.once('value'))
+      .then(snapshot => snapshot.val())
+      .then(Object.keys)
+      .then(keys => keys.length)
+      .then((numKeys) => {
+        expect(numKeys).toBe(1);
+        done();
+      });
+  });
 
   // .remove()
   it('should run without errors when calling remove without a callback', () => {
