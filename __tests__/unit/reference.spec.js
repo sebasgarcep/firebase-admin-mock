@@ -338,14 +338,17 @@ describe('Reference testing suite', () => {
       })
       .then(() => {
         const onComplete = () => {
-          ref.child('foo').once('value')
-            .then((fooSnapshot) => {
+          Promise.all([
+            ref.child('foo').once('value').then((fooSnapshot) => {
               expect(fooSnapshot.val()).toBe('foo');
-              done();
-            });
+            }),
+            ref.child('bar').once('value').then((fooSnapshot) => {
+              expect(fooSnapshot.val()).toBe('bar');
+            }),
+          ]).then(() => done());
         };
 
-        ref.update({ foo: 'foo' }, onComplete);
+        ref.update({ foo: 'foo', bar: 'bar' }, onComplete);
       });
   });
 });
