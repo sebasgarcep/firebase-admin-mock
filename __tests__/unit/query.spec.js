@@ -303,7 +303,29 @@ describe('Query testing suite', () => {
     expect(() => (new Query(app)).limitToFirst(10).limitToLast(10)).toThrow();
   });
 
-  // .off() -- missing tests
+  // .off()
+  it('should run off without failing', () => {
+    const handler = jest.fn();
+    query = new Query(app);
+
+    expect(() => {
+      query.on('value', handler);
+      query.off('value', handler);
+    }).not.toThrow();
+  });
+
+  it('should remove a function handler when running off', () => {
+    query = new Query(app);
+    const handler = jest.fn();
+    const ref = new Reference(app);
+
+    query.on('value', handler);
+    ref.set('value1');
+    query.off('value', handler);
+    ref.set('value2');
+
+    expect(handler).toHaveBeenCalledTimes(2);
+  });
 
   // .on() -- missing tests
 
@@ -350,6 +372,19 @@ describe('Query testing suite', () => {
       .then((dataSnapshot) => {
         expect(dataSnapshot.key).toBe(query.ref.key);
       });
+  });
+
+  it('should not run the once\'s function handler more than once', () => {
+    let handler = jest.fn();
+
+    query = new Query(app);
+    query.once('value', handler);
+
+    const ref = new Reference(app);
+    ref.set('value1');
+    ref.set('value2');
+
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 
   // .orderByChild()
