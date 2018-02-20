@@ -14,6 +14,48 @@ describe('reconciliation testing suite', () => {
     expect(() => reconciliation(parseData({ foo: 'bar' }), parseData({ foo: 'bar' }))).not.toThrow();
   });
 
+  it('should return additions for trees of depth 0', () => {
+    const treePrev = null;
+    const treeNext = 'value2';
+    expect(reconciliation(parseData(treePrev), parseData(treeNext))).toEqual({
+      [UPDATES]: {
+        type: 'added',
+        location: [],
+        path: '',
+        parentLocation: null,
+        parentPath: null,
+      },
+    });
+  });
+
+  it('should return changes for trees of depth 0', () => {
+    const treePrev = 'value1';
+    const treeNext = 'value2';
+    expect(reconciliation(parseData(treePrev), parseData(treeNext))).toEqual({
+      [UPDATES]: {
+        type: 'changed',
+        location: [],
+        path: '',
+        parentLocation: null,
+        parentPath: null,
+      },
+    });
+  });
+
+  it('should return removals for trees of depth 0', () => {
+    const treePrev = 'value1';
+    const treeNext = null;
+    expect(reconciliation(parseData(treePrev), parseData(treeNext))).toEqual({
+      [UPDATES]: {
+        type: 'removed',
+        location: [],
+        path: '',
+        parentLocation: null,
+        parentPath: null,
+      },
+    });
+  });
+
   it('should return no updates for equal trees of arbitrary depth', () => {
     const treeDepth1 = { value: 'fake' };
     const treeDepth2 = { value: 'fake', nested: { graph: 'node' } };
