@@ -2,7 +2,7 @@
 
 ### Notice
 
-ALPHA SOFTWARE. USE AT YOUR OWN RISK.
+DO NOT USE THIS LIBRARY UNDER ANY CIRCUMSTANCES. IT IS BEING DEPRECATED IN FAVOR OF [firebase-mock](https://github.com/soumak77/firebase-mock).
 
 ### Installing
 
